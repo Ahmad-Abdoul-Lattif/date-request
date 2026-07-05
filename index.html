@@ -271,11 +271,7 @@
       <h1>Alors… tu es libre quand ?</h1>
       <div class="field">
         <label>Choisis un jour 📅</label>
-        <div class="chips" id="days">
-          <button class="chip" data-day="Vendredi 14 Fév">Ven. 14 Fév</button>
-          <button class="chip" data-day="Samedi 15 Fév">Sam. 15 Fév</button>
-          <button class="chip" data-day="Dimanche 16 Fév">Dim. 16 Fév</button>
-        </div>
+        <div class="chips" id="days"></div>
       </div>
       <div class="field">
         <label>À quelle heure ? 🕐</label>
@@ -463,13 +459,40 @@
   toStep3.addEventListener("click",()=>go("s4"));
 
   /* ═══════════════ 4 · jour + heure ═══════════════ */
-  const timeSel=$("#time"), confirm=$("#confirm");
+  const timeSel=$("#time"), confirm=$("#confirm"), daysBox=$("#days");
   function checkStep(){ const ok=state.day&&state.time; confirm.disabled=!ok; confirm.style.opacity=ok?1:.5; }
-  $$("#days .chip").forEach(c=>{
-    c.addEventListener("click",()=>{
-      $$("#days .chip").forEach(x=>x.classList.remove("sel"));
-      c.classList.add("sel"); state.day=c.dataset.day; checkStep(); beep("click");
-    });
+
+  function getUpcomingDays(count){
+    const dowLong=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+    const dowShort=["Dim.","Lun.","Mar.","Mer.","Jeu.","Ven.","Sam."];
+    const moLong=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+    const moShort=["Janv","Févr","Mars","Avr","Mai","Juin","Juil","Août","Sept","Oct","Nov","Déc"];
+    const weekend=[5,6,0]; // Vendredi, Samedi, Dimanche : le week-end le plus proche
+    const out=[]; const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+1);
+    let guard=0;
+    while(out.length<count && guard<30){
+      if(weekend.includes(d.getDay())){
+        out.push({
+          label:`${dowShort[d.getDay()]} ${d.getDate()} ${moShort[d.getMonth()]}`,
+          value:`${dowLong[d.getDay()]} ${d.getDate()} ${moLong[d.getMonth()]}`
+        });
+      }
+      d.setDate(d.getDate()+1); guard++;
+    }
+    return out;
+  }
+
+  getUpcomingDays(3).forEach(d=>{
+    const btn=document.createElement("button");
+    btn.type="button"; btn.className="chip"; btn.dataset.day=d.value; btn.textContent=d.label;
+    daysBox.appendChild(btn);
+  });
+
+  daysBox.addEventListener("click",(e)=>{
+    const c=e.target.closest(".chip");
+    if(!c) return;
+    $$("#days .chip").forEach(x=>x.classList.remove("sel"));
+    c.classList.add("sel"); state.day=c.dataset.day; checkStep(); beep("click");
   });
   timeSel.addEventListener("change",()=>{ state.time=timeSel.value; checkStep(); beep("click"); });
   confirm.addEventListener("click",()=>{
