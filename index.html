@@ -1,56 +1,54 @@
 <!--
-  DATE REQUEST — site interactif de demande de rendez-vous
-  100% statique · un seul fichier · déployable sur Netlify (glisse le fichier dans netlify.com/drop)
+  DATE REQUEST v2 — site interactif de demande de rendez-vous
+  100% statique · un seul fichier · déployé via GitHub -> Netlify
 
-  ┌─ PERSONNALISATION RAPIDE ─────────────────────────────────────────┐
-  │  Modifie l'objet CONFIG juste en dessous (nom, prénom, message).  │
-  │  Tu peux aussi passer le prénom dans l'URL : ...netlify.app/?to=Awa │
+  ┌─ PERSONNALISATION ────────────────────────────────────────────────┐
+  │  Modifie l'objet CONFIG dans le <script> (nom, prénom, messages). │
+  │  URL perso : ...netlify.app/?to=Awa&from=Ahmad                     │
   └───────────────────────────────────────────────────────────────────┘
 -->
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Date Request 💌</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,600;1,9..144,900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
 <style>
   :root {
-    /* palette — blush chaud + encre prune profonde + magenta qui claque */
     --bg-1: #ffe1ea;
     --bg-2: #ffb8d2;
     --bg-3: #ff9fc0;
+    --bg-4: #ffd8c2;
     --ink: #37092b;
     --ink-soft: #7a3661;
-    --card: #fffafc;
+    --card: rgba(255, 250, 252, .82);
     --line: #ffd4e2;
-    --accent: #ff1d68;      /* le coup de projecteur */
+    --accent: #ff1d68;
     --accent-d: #d80f52;
     --coral: #ff7a45;
     --gold: #ffb627;
     --ok: #10b981;
 
-    --r-lg: 26px;
+    --r-lg: 28px;
     --r-md: 18px;
     --r-sm: 12px;
-    --shadow: 0 22px 60px -20px rgba(216, 15, 82, .45);
-    --shadow-sm: 0 8px 26px -12px rgba(55, 9, 43, .35);
+    --shadow: 0 30px 70px -24px rgba(216, 15, 82, .5);
+    --shadow-sm: 0 10px 30px -14px rgba(55, 9, 43, .4);
 
     --f-display: "Fraunces", Georgia, serif;
     --f-body: "Instrument Sans", system-ui, -apple-system, sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   html, body { height: 100%; }
 
   body {
     font-family: var(--f-body);
     color: var(--ink);
-    background:
-      radial-gradient(120% 90% at 15% 0%, var(--bg-1) 0%, transparent 55%),
-      radial-gradient(120% 90% at 90% 10%, #ffe9dd 0%, transparent 50%),
-      linear-gradient(160deg, var(--bg-2), var(--bg-3) 55%, #ffa9cd);
+    background: linear-gradient(300deg, var(--bg-1), var(--bg-2), var(--bg-3), var(--bg-4));
+    background-size: 260% 260%;
+    animation: aurora 18s ease infinite;
     min-height: 100dvh;
     display: grid;
     place-items: center;
@@ -58,30 +56,29 @@
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
+  @keyframes aurora {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
 
-  /* ── cœurs flottants d'ambiance ─────────────────────────── */
   .ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
   .ambient span {
-    position: absolute; bottom: -40px; font-size: 20px; opacity: .5;
+    position: absolute; bottom: -40px;
     animation: rise linear infinite;
     filter: drop-shadow(0 4px 8px rgba(216,15,82,.25));
   }
-  @keyframes rise {
-    to { transform: translateY(-115dvh) rotate(220deg); opacity: 0; }
-  }
+  @keyframes rise { to { transform: translateY(-118dvh) rotate(220deg); opacity: 0; } }
 
-  /* ── la scène ──────────────────────────────────────────── */
-  .stage {
-    position: relative; z-index: 2;
-    width: min(560px, 100%);
-  }
+  .stage { position: relative; z-index: 2; width: min(560px, 100%); }
 
   .card {
-    background: linear-gradient(180deg, var(--card), #fff5f9);
-    border: 1px solid var(--line);
+    background: var(--card);
+    backdrop-filter: blur(16px) saturate(1.3);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    border: 1px solid rgba(255,255,255,.6);
     border-radius: var(--r-lg);
     box-shadow: var(--shadow);
-    padding: 40px 30px 34px;
+    padding: 38px 30px 30px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -94,154 +91,114 @@
   }
   @keyframes slide { to { background-position: 260% 0; } }
 
-  /* progression */
-  .steps { display: flex; gap: 6px; justify-content: center; margin-bottom: 26px; }
-  .steps i {
-    width: 26px; height: 5px; border-radius: 99px; background: var(--line);
-    transition: background .4s, width .4s;
+  .sound {
+    position: absolute; top: 14px; right: 14px; z-index: 5;
+    width: 38px; height: 38px; border-radius: 99px; border: 1px solid var(--line);
+    background: #fff; cursor: pointer; font-size: 16px; line-height: 1;
+    display: grid; place-items: center; box-shadow: var(--shadow-sm);
+    transition: transform .15s;
   }
-  .steps i.on { background: var(--accent); width: 34px; }
-  .steps i.done { background: var(--coral); }
+  .sound:hover { transform: scale(1.08); }
 
-  /* écrans */
+  .steps { display: flex; gap: 6px; justify-content: center; margin-bottom: 24px; }
+  .steps i { width: 24px; height: 5px; border-radius: 99px; background: var(--line); transition: .4s; }
+  .steps i.on { background: var(--accent); width: 32px; }
+  .steps i.done { background: var(--coral); }
+  .steps.hide { visibility: hidden; }
+
   .screen { display: none; animation: pop .5s cubic-bezier(.2,.8,.2,1); }
   .screen.active { display: block; }
   @keyframes pop {
-    from { opacity: 0; transform: translateY(14px) scale(.98); }
+    from { opacity: 0; transform: translateY(16px) scale(.98); }
     to   { opacity: 1; transform: none; }
   }
 
   .mascot {
-    font-size: 58px; line-height: 1; display: inline-block;
-    filter: drop-shadow(0 10px 18px rgba(216,15,82,.35));
+    font-size: 60px; line-height: 1; display: inline-block;
+    filter: drop-shadow(0 12px 20px rgba(216,15,82,.35));
     animation: float 3s ease-in-out infinite;
   }
-  @keyframes float { 50% { transform: translateY(-9px) rotate(-4deg); } }
+  @keyframes float { 50% { transform: translateY(-10px) rotate(-5deg); } }
 
   h1 {
-    font-family: var(--f-display);
-    font-weight: 900;
-    font-size: clamp(28px, 7vw, 44px);
-    line-height: 1.02;
-    letter-spacing: -.02em;
-    margin: 18px 0 8px;
+    font-family: var(--f-display); font-weight: 900;
+    font-size: clamp(28px, 7vw, 46px); line-height: 1.02;
+    letter-spacing: -.02em; margin: 18px 0 8px;
   }
   h1 em { font-style: italic; color: var(--accent); }
-  .sub {
-    font-size: 15px; color: var(--ink-soft); font-weight: 500;
-    max-width: 34ch; margin: 0 auto 26px;
-  }
-  .eyebrow {
-    font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
-    color: var(--accent-d); margin-bottom: 4px;
-  }
+  .sub { font-size: 15px; color: var(--ink-soft); font-weight: 500; max-width: 34ch; margin: 0 auto 26px; min-height: 1.2em; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-d); margin-bottom: 4px; }
 
-  /* boutons */
   .btn {
     font-family: var(--f-body); font-weight: 700; font-size: 16px;
     border: none; border-radius: 99px; padding: 15px 30px; cursor: pointer;
     color: #fff; background: linear-gradient(180deg, var(--accent), var(--accent-d));
-    box-shadow: var(--shadow-sm); transition: transform .15s, box-shadow .2s, filter .2s;
+    box-shadow: var(--shadow-sm); transition: transform .15s, filter .2s;
   }
-  .btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+  .btn:hover { transform: translateY(-2px); filter: brightness(1.06); }
   .btn:active { transform: translateY(0) scale(.98); }
-  .btn.ghost {
-    background: #fff; color: var(--ink); border: 1.5px solid var(--line); box-shadow: none;
-  }
+  .btn.ghost { background: #fff; color: var(--ink); border: 1.5px solid var(--line); box-shadow: none; }
   .btn.wide { width: 100%; }
   .btn.wa { background: linear-gradient(180deg, #25d366, #128c4b); }
+  .btn.gold { background: linear-gradient(180deg, var(--gold), var(--coral)); color: var(--ink); }
 
   .choice-row { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  #yesBtn { transition: transform .25s cubic-bezier(.2,1.4,.4,1); }
+  #noBtn { position: relative; transition: transform .35s cubic-bezier(.2,.8,.2,1); }
 
-  #yesBtn { transition: transform .25s cubic-bezier(.2,1.4,.4,1), padding .25s, font-size .25s; }
-
-  /* le fameux bouton "non" qui fuit */
-  #noBtn {
-    position: relative;
-    transition: transform .35s cubic-bezier(.2,.8,.2,1);
-  }
-
-  /* grille d'ambiance */
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 26px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 24px; }
   @media (max-width: 420px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-  .tile {
-    background: #fff; border: 2px solid var(--line); border-radius: var(--r-md);
-    padding: 16px 8px 12px; cursor: pointer; text-align: center;
-    transition: transform .16s, border-color .2s, box-shadow .2s;
-  }
+  .tile { background: #fff; border: 2px solid var(--line); border-radius: var(--r-md); padding: 16px 8px 12px; cursor: pointer; text-align: center; transition: transform .16s, border-color .2s, box-shadow .2s; }
   .tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
   .tile .emo { font-size: 34px; display: block; }
   .tile .lab { font-size: 13px; font-weight: 600; color: var(--ink-soft); margin-top: 6px; }
-  .tile.sel {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(255,29,104,.15);
-    transform: translateY(-3px);
-  }
+  .tile.sel { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(255,29,104,.15); transform: translateY(-3px); }
   .tile.sel .lab { color: var(--accent-d); }
 
-  /* jour + heure */
+  /* love-o-meter */
+  .meter-wrap { margin: 10px 0 22px; }
+  .gauge { height: 22px; border-radius: 99px; background: #fff; border: 1.5px solid var(--line); overflow: hidden; box-shadow: inset 0 2px 6px rgba(55,9,43,.08); }
+  .gauge > i { display: block; height: 100%; width: 0%; border-radius: 99px; background: linear-gradient(90deg, var(--coral), var(--accent)); transition: width .12s linear; }
+  .meter-pct { font-family: var(--f-display); font-weight: 900; font-size: 40px; margin-top: 12px; color: var(--accent); }
+  .meter-cap { font-size: 14px; color: var(--ink-soft); font-weight: 600; min-height: 1.2em; margin-top: 2px; }
+
   .field { text-align: left; margin-bottom: 18px; }
   .field > label { display: block; font-size: 13px; font-weight: 700; color: var(--ink-soft); margin-bottom: 8px; }
   .chips { display: flex; gap: 8px; flex-wrap: wrap; }
-  .chip {
-    border: 1.5px solid var(--line); background: #fff; border-radius: 99px;
-    padding: 9px 16px; font-size: 14px; font-weight: 600; color: var(--ink); cursor: pointer;
-    transition: all .18s;
-  }
+  .chip { border: 1.5px solid var(--line); background: #fff; border-radius: 99px; padding: 9px 16px; font-size: 14px; font-weight: 600; color: var(--ink); cursor: pointer; transition: all .18s; }
   .chip.sel { background: var(--accent); color: #fff; border-color: var(--accent); }
   select {
     width: 100%; font-family: var(--f-body); font-size: 15px; font-weight: 500; color: var(--ink);
-    padding: 14px 16px; border: 1.5px solid var(--line); border-radius: var(--r-sm);
-    background: #fff; cursor: pointer; appearance: none;
+    padding: 14px 16px; border: 1.5px solid var(--line); border-radius: var(--r-sm); background: #fff; cursor: pointer; appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23d80f52' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 16px center;
   }
 
-  /* le DATE PASS (écran final) — l'élément signature */
-  .pass {
-    text-align: left; position: relative;
-    background: linear-gradient(160deg, #fff, #fff2f7);
-    border: 1.5px solid var(--line); border-radius: var(--r-md);
-    box-shadow: var(--shadow-sm);
-    margin: 8px 0 22px; overflow: hidden;
-  }
-  .pass-top {
-    background: linear-gradient(120deg, var(--accent), var(--coral));
-    color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
-  }
+  .pass { text-align: left; position: relative; background: linear-gradient(160deg, #fff, #fff2f7); border: 1.5px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-sm); margin: 8px 0 22px; overflow: hidden; }
+  .pass-top { background: linear-gradient(120deg, var(--accent), var(--coral)); color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
   .pass-top .k { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; opacity: .9; }
   .pass-top .v { font-family: var(--f-display); font-weight: 900; font-size: 20px; }
   .perf { position: relative; height: 0; }
-  .perf::before, .perf::after {
-    content: ""; position: absolute; top: -11px; width: 22px; height: 22px; border-radius: 99px;
-    background: var(--bg-2); /* couleur du fond de page ~ effet ticket perforé */
-  }
-  .perf::before { left: -11px; }
-  .perf::after { right: -11px; }
+  .perf::before, .perf::after { content: ""; position: absolute; top: -11px; width: 22px; height: 22px; border-radius: 99px; background: var(--bg-2); }
+  .perf::before { left: -11px; } .perf::after { right: -11px; }
   .perf hr { border: none; border-top: 2px dashed var(--line); margin: 0 14px; }
-  .pass-body { padding: 18px 20px 20px; }
+  .pass-body { padding: 16px 20px 20px; }
   .line { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--line); }
   .line:last-child { border-bottom: none; }
   .line .lbl { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
   .line .val { font-family: var(--f-display); font-weight: 600; font-size: 17px; text-align: right; }
 
   .actions { display: grid; gap: 10px; }
-  .toast {
-    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px);
-    background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 99px;
-    font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; z-index: 60;
-    transition: opacity .3s, transform .3s;
-  }
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px); background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 99px; font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; z-index: 60; transition: .3s; }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   .foot { margin-top: 18px; font-size: 12px; color: var(--ink-soft); opacity: .8; }
-  .back {
-    background: none; border: none; color: var(--ink-soft); font-family: var(--f-body);
-    font-weight: 600; font-size: 13px; cursor: pointer; margin-bottom: 6px;
-  }
+  .back { background: none; border: none; color: var(--ink-soft); font-family: var(--f-body); font-weight: 600; font-size: 13px; cursor: pointer; margin-bottom: 6px; }
+
+  .caret { display: inline-block; width: 2px; height: 1em; background: var(--accent); vertical-align: -2px; margin-left: 2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
 
   canvas#fx { position: fixed; inset: 0; pointer-events: none; z-index: 40; }
-
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
   @media (prefers-reduced-motion: reduce) {
@@ -254,12 +211,20 @@
 
 <main class="stage">
   <div class="card">
-    <div class="steps" id="steps" aria-hidden="true">
-      <i></i><i></i><i></i><i></i>
-    </div>
+    <button class="sound" id="soundBtn" title="Son" aria-label="Activer/couper le son">🔊</button>
+
+    <div class="steps hide" id="steps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+    <!-- 0 · INTRO -->
+    <section class="screen active" id="s0">
+      <span class="mascot">💌</span>
+      <h1>Un message<br>pour <em id="introName">toi</em>…</h1>
+      <p class="sub" id="introType"></p>
+      <button class="btn" id="startBtn">Ouvrir 💗</button>
+    </section>
 
     <!-- 1 · INVITATION -->
-    <section class="screen active" id="s1">
+    <section class="screen" id="s1">
       <span class="mascot">🐻</span>
       <h1>Tu veux bien <em>sortir</em><br>avec moi ?</h1>
       <p class="sub">Réponds vite, mon cœur bat à 180 là 💓</p>
@@ -272,7 +237,7 @@
     <!-- 2 · AMBIANCE -->
     <section class="screen" id="s2">
       <button class="back" data-back="s1">← retour</button>
-      <div class="eyebrow">Étape 1 / 2</div>
+      <div class="eyebrow">Étape 1 / 3</div>
       <h1>On a envie de quoi ?</h1>
       <p class="sub">Choisis l'ambiance du soir 🍽️✨</p>
       <div class="grid" id="grid">
@@ -286,10 +251,23 @@
       <button class="btn wide" id="toStep2" disabled style="opacity:.5">Continuer →</button>
     </section>
 
-    <!-- 3 · JOUR + HEURE -->
+    <!-- 3 · LOVE-O-METER -->
     <section class="screen" id="s3">
+      <div class="eyebrow">Étape 2 / 3</div>
+      <h1>Test de <em>compatibilité</em></h1>
+      <p class="sub">Analyse scientifique très sérieuse 🔬</p>
+      <div class="meter-wrap">
+        <div class="gauge"><i id="gaugeFill"></i></div>
+        <div class="meter-pct" id="meterPct">0%</div>
+        <div class="meter-cap" id="meterCap">initialisation…</div>
+      </div>
+      <button class="btn wide" id="toStep3" disabled style="opacity:.5">Continuer →</button>
+    </section>
+
+    <!-- 4 · JOUR + HEURE -->
+    <section class="screen" id="s4">
       <button class="back" data-back="s2">← retour</button>
-      <div class="eyebrow">Étape 2 / 2</div>
+      <div class="eyebrow">Étape 3 / 3</div>
       <h1>Alors… tu es libre quand ?</h1>
       <div class="field">
         <label>Choisis un jour 📅</label>
@@ -312,8 +290,8 @@
       <button class="btn wide" id="confirm" disabled style="opacity:.5">C'est un rendez-vous 💘</button>
     </section>
 
-    <!-- 4 · DATE PASS -->
-    <section class="screen" id="s4">
+    <!-- 5 · DATE PASS -->
+    <section class="screen" id="s5">
       <span class="mascot">🎉</span>
       <h1>C'est un <em>date</em> !</h1>
       <p class="sub" id="finalMsg">Content que tu n'aies pas dit non 😌</p>
@@ -327,12 +305,14 @@
         <div class="pass-body">
           <div class="line"><span class="lbl">Invité·e</span><span class="val" id="pTo">—</span></div>
           <div class="line"><span class="lbl">Ambiance</span><span class="val" id="pFood">—</span></div>
+          <div class="line"><span class="lbl">Compatibilité</span><span class="val" id="pScore">—</span></div>
           <div class="line"><span class="lbl">Jour</span><span class="val" id="pDay">—</span></div>
           <div class="line"><span class="lbl">Heure</span><span class="val" id="pTime">—</span></div>
         </div>
       </div>
 
       <div class="actions">
+        <button class="btn gold wide" id="download">Télécharger le ticket 🎟️</button>
         <button class="btn wa wide" id="share">Partager sur WhatsApp 📲</button>
         <button class="btn ghost wide" id="copy">Copier le récap</button>
         <button class="back" id="restart" style="margin:6px auto 0">↺ recommencer</button>
@@ -346,201 +326,278 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  /* ═══════════════ CONFIG — modifie ici ═══════════════ */
+  /* ═══════════════ CONFIG ═══════════════ */
   const CONFIG = {
-    to: "toi",                 // prénom de la personne (ou via l'URL ?to=Awa)
-    from: "moi",               // ton prénom (apparaît dans le message WhatsApp)
-    // textes escaladés du bouton "non" à chaque tentative de clic/survol :
-    noEscalation: [
-      "non 🥀", "t'es sûr·e ? 👀", "réfléchis bien…",
-      "vraiment ?? 😭", "dernière chance", "trop tard, clique oui 😌"
-    ]
+    to: "toi",
+    from: "moi",
+    introLines: "quelqu'un pense fort à toi en ce moment… 👀",
+    noEscalation: ["non 🥀","t'es sûr·e ? 👀","réfléchis bien…","vraiment ?? 😭","dernière chance","trop tard, clique oui 😌"]
   };
-
-  /* prénom depuis l'URL : ...?to=Awa */
   const params = new URLSearchParams(location.search);
-  if (params.get("to")) CONFIG.to = decodeURIComponent(params.get("to"));
+  if (params.get("to"))   CONFIG.to   = decodeURIComponent(params.get("to"));
+  if (params.get("from")) CONFIG.from = decodeURIComponent(params.get("from"));
 
-  /* ═══════════════ ÉTAT ═══════════════ */
-  const state = { food: "", day: "", time: "", to: CONFIG.to };
-
+  const state = { food: "", day: "", time: "", to: CONFIG.to, score: 0 };
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-  const screens = { s1: $("#s1"), s2: $("#s2"), s3: $("#s3"), s4: $("#s4") };
-  const stepDots = $$("#steps i");
+  const screens = { s0:$("#s0"), s1:$("#s1"), s2:$("#s2"), s3:$("#s3"), s4:$("#s4"), s5:$("#s5") };
+  const steps = $("#steps"), stepDots = $$("#steps i");
+  const stepIndex = { s2:0, s3:1, s4:2, s5:3 };
 
-  const stepIndex = { s1: 0, s2: 1, s3: 2, s4: 3 };
   function go(id) {
     Object.values(screens).forEach(s => s.classList.remove("active"));
     screens[id].classList.add("active");
-    const idx = stepIndex[id];
-    stepDots.forEach((d, i) => {
-      d.classList.toggle("on", i === idx);
-      d.classList.toggle("done", i < idx);
-    });
+    if (id in stepIndex) {
+      steps.classList.remove("hide");
+      const idx = stepIndex[id];
+      stepDots.forEach((d,i) => { d.classList.toggle("on", i===idx); d.classList.toggle("done", i<idx); });
+    } else { steps.classList.add("hide"); }
     window.scrollTo({ top: 0, behavior: "smooth" });
+    beep(id === "s1" ? "open" : "step");
   }
 
   /* ── cœurs d'ambiance ── */
   const emojis = ["💗","💖","🩷","✨","💘","🌸"];
   const amb = $("#ambient");
-  for (let i = 0; i < 16; i++) {
-    const s = document.createElement("span");
-    s.textContent = emojis[i % emojis.length];
-    s.style.left = Math.random() * 100 + "%";
-    s.style.fontSize = 14 + Math.random() * 22 + "px";
-    s.style.animationDuration = 7 + Math.random() * 9 + "s";
-    s.style.animationDelay = -Math.random() * 12 + "s";
+  for (let i=0;i<18;i++){
+    const s=document.createElement("span");
+    s.textContent=emojis[i%emojis.length];
+    s.style.left=Math.random()*100+"%";
+    s.style.fontSize=14+Math.random()*24+"px";
+    s.style.opacity=.35+Math.random()*.3;
+    s.style.animationDuration=7+Math.random()*10+"s";
+    s.style.animationDelay=-Math.random()*14+"s";
     amb.appendChild(s);
   }
 
-  /* ═══════════════ 1 · bouton NON qui fuit + OUI qui grossit ═══════════════ */
-  const yesBtn = $("#yesBtn");
-  const noBtn  = $("#noBtn");
-  let noTries = 0, yesScale = 1;
-
-  function dodge() {
-    noTries++;
-    // texte qui escalade
-    noBtn.textContent = CONFIG.noEscalation[Math.min(noTries, CONFIG.noEscalation.length - 1)];
-    // le oui grossit
-    yesScale = Math.min(yesScale + 0.14, 2.1);
-    yesBtn.style.transform = `scale(${yesScale})`;
-    // le non saute ailleurs (dans une zone raisonnable, safe mobile)
-    const maxX = Math.min(window.innerWidth * 0.32, 150);
-    const dx = (Math.random() * 2 - 1) * maxX;
-    const dy = (Math.random() * 2 - 1) * 90;
-    noBtn.style.transform = `translate(${dx}px, ${dy}px)`;
-    // après plusieurs essais, on rétrécit le non pour signifier "abandonne"
-    if (noTries >= 3) noBtn.style.opacity = Math.max(0.35, 1 - noTries * 0.12);
+  /* ═══════════════ SON (WebAudio, sans fichier) ═══════════════ */
+  let audioCtx=null, soundOn=true;
+  function ac(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return audioCtx; }
+  function tone(freq,dur=.12,type="sine",vol=.14,when=0){
+    const c=ac(); if(!c||!soundOn) return;
+    const t=c.currentTime+when;
+    const o=c.createOscillator(), g=c.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol,t+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t+dur+.02);
   }
-  noBtn.addEventListener("mouseenter", dodge);
-  noBtn.addEventListener("click", (e) => { e.preventDefault(); dodge(); });
-
-  yesBtn.addEventListener("click", () => {
-    burst();
-    setTimeout(() => go("s2"), 550);
+  function beep(kind){
+    if(!soundOn) return;
+    if(kind==="click") tone(520,.07,"triangle",.10);
+    else if(kind==="step") tone(440,.10,"sine",.10);
+    else if(kind==="open"){ tone(523,.10,"sine",.12); tone(659,.12,"sine",.12,.08); }
+    else if(kind==="yes"){ [523,659,784,1047].forEach((f,i)=>tone(f,.16,"sine",.14,i*.09)); }
+    else if(kind==="win"){ [523,587,659,784,880,1047].forEach((f,i)=>tone(f,.18,"triangle",.13,i*.11)); }
+    else if(kind==="tick") tone(880,.03,"square",.05);
+  }
+  $("#soundBtn").addEventListener("click",()=>{
+    soundOn=!soundOn; $("#soundBtn").textContent=soundOn?"🔊":"🔇";
+    if(soundOn){ ac(); beep("click"); }
   });
+
+  /* ═══════════════ 0 · INTRO (machine à écrire) ═══════════════ */
+  $("#introName").textContent = CONFIG.to;
+  const typeEl=$("#introType"); const txt=CONFIG.introLines; let ci=0;
+  function typeLoop(){
+    if(ci<=txt.length){
+      typeEl.innerHTML = txt.slice(0,ci) + '<span class="caret"></span>';
+      if(ci<txt.length && ci%2===0) beep("tick");
+      ci++; setTimeout(typeLoop, 55);
+    } else { typeEl.innerHTML = txt; }
+  }
+  setTimeout(typeLoop, 400);
+  $("#startBtn").addEventListener("click",()=>{ ac(); beep("open"); go("s1"); });
+
+  /* ═══════════════ 1 · NON qui fuit + OUI qui grossit ═══════════════ */
+  const yesBtn=$("#yesBtn"), noBtn=$("#noBtn");
+  let noTries=0, yesScale=1;
+  function dodge(){
+    noTries++;
+    noBtn.textContent=CONFIG.noEscalation[Math.min(noTries,CONFIG.noEscalation.length-1)];
+    yesScale=Math.min(yesScale+0.14,2.1);
+    yesBtn.style.transform=`scale(${yesScale})`;
+    const maxX=Math.min(window.innerWidth*0.32,150);
+    noBtn.style.transform=`translate(${(Math.random()*2-1)*maxX}px, ${(Math.random()*2-1)*90}px)`;
+    if(noTries>=3) noBtn.style.opacity=Math.max(0.35,1-noTries*0.12);
+    beep("click");
+  }
+  noBtn.addEventListener("mouseenter",dodge);
+  noBtn.addEventListener("click",e=>{ e.preventDefault(); dodge(); });
+  yesBtn.addEventListener("click",()=>{ beep("yes"); burst(); setTimeout(()=>go("s2"),550); });
 
   /* ═══════════════ 2 · ambiance ═══════════════ */
-  const toStep2 = $("#toStep2");
-  $$("#grid .tile").forEach(t => {
-    t.addEventListener("click", () => {
-      $$("#grid .tile").forEach(x => x.classList.remove("sel"));
-      t.classList.add("sel");
-      state.food = t.dataset.food;
-      toStep2.disabled = false;
-      toStep2.style.opacity = 1;
+  const toStep2=$("#toStep2");
+  $$("#grid .tile").forEach(t=>{
+    t.addEventListener("click",()=>{
+      $$("#grid .tile").forEach(x=>x.classList.remove("sel"));
+      t.classList.add("sel"); state.food=t.dataset.food;
+      toStep2.disabled=false; toStep2.style.opacity=1; beep("click");
     });
   });
-  toStep2.addEventListener("click", () => go("s3"));
+  toStep2.addEventListener("click",()=>{ go("s3"); runMeter(); });
 
-  /* ═══════════════ 3 · jour + heure ═══════════════ */
-  const timeSel = $("#time");
-  const confirm = $("#confirm");
-  function checkStep3() {
-    const ok = state.day && state.time;
-    confirm.disabled = !ok;
-    confirm.style.opacity = ok ? 1 : .5;
+  /* ═══════════════ 3 · love-o-meter ═══════════════ */
+  const fill=$("#gaugeFill"), pctEl=$("#meterPct"), capEl=$("#meterCap"), toStep3=$("#toStep3");
+  const caps=[[0,"analyse des vibes… 🔍"],[25,"calcul du taux de mignonnerie… 🧮"],[50,"vérification cosmique… 🔮"],[70,"consultation des étoiles… ⭐"],[88,"presque… 😮"],[97,"waouh. 😳"]];
+  let meterRunning=false;
+  function runMeter(){
+    if(meterRunning) return; meterRunning=true;
+    toStep3.disabled=true; toStep3.style.opacity=.5;
+    const target=97+Math.floor(Math.random()*3); // 97–99
+    state.score=target; let v=0;
+    const iv=setInterval(()=>{
+      v+=Math.max(1,Math.round((target-v)*0.08));
+      if(v>=target) v=target;
+      fill.style.width=v+"%"; pctEl.textContent=v+"%";
+      const cap=[...caps].reverse().find(c=>v>=c[0]); if(cap) capEl.textContent=cap[1];
+      if(v%7===0) beep("tick");
+      if(v>=target){
+        clearInterval(iv);
+        capEl.textContent=`${target}% compatibles 💘 (le reste, c'est le suspense)`;
+        toStep3.disabled=false; toStep3.style.opacity=1; beep("yes"); burst();
+      }
+    },45);
   }
-  $$("#days .chip").forEach(c => {
-    c.addEventListener("click", () => {
-      $$("#days .chip").forEach(x => x.classList.remove("sel"));
-      c.classList.add("sel");
-      state.day = c.dataset.day;
-      checkStep3();
+  toStep3.addEventListener("click",()=>go("s4"));
+
+  /* ═══════════════ 4 · jour + heure ═══════════════ */
+  const timeSel=$("#time"), confirm=$("#confirm");
+  function checkStep(){ const ok=state.day&&state.time; confirm.disabled=!ok; confirm.style.opacity=ok?1:.5; }
+  $$("#days .chip").forEach(c=>{
+    c.addEventListener("click",()=>{
+      $$("#days .chip").forEach(x=>x.classList.remove("sel"));
+      c.classList.add("sel"); state.day=c.dataset.day; checkStep(); beep("click");
     });
   });
-  timeSel.addEventListener("change", () => { state.time = timeSel.value; checkStep3(); });
-
-  confirm.addEventListener("click", () => {
-    // remplit le pass
-    $("#pTo").textContent   = state.to;
-    $("#pFood").textContent = state.food;
-    $("#pDay").textContent  = state.day;
-    $("#pTime").textContent = state.time;
-    $("#finalMsg").textContent = `Sois prêt·e, ${state.day.split(" ")[0].toLowerCase()} je passe te chercher 🚗💨`;
-    go("s4");
-    burst(); setTimeout(burst, 350);
+  timeSel.addEventListener("change",()=>{ state.time=timeSel.value; checkStep(); beep("click"); });
+  confirm.addEventListener("click",()=>{
+    $("#pTo").textContent=state.to;
+    $("#pFood").textContent=state.food;
+    $("#pScore").textContent=state.score+"% 💘";
+    $("#pDay").textContent=state.day;
+    $("#pTime").textContent=state.time;
+    $("#finalMsg").textContent=`Sois prêt·e, ${state.day.split(" ")[0].toLowerCase()} je passe te chercher 🚗💨`;
+    go("s5"); beep("win"); burst(); setTimeout(burst,350); setTimeout(burst,700);
   });
 
-  /* boutons retour */
-  $$(".back[data-back]").forEach(b =>
-    b.addEventListener("click", () => go(b.dataset.back))
-  );
+  $$(".back[data-back]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.back)));
 
-  /* ═══════════════ 4 · partage ═══════════════ */
-  function recapText() {
+  /* ═══════════════ 5 · récap / partage / image ═══════════════ */
+  function recapText(){
     return `💌 Demande de rendez-vous — de ${CONFIG.from} pour ${state.to}\n\n`
       + `Ambiance : ${state.food}\n`
+      + `Compatibilité : ${state.score}% 💘\n`
       + `Jour : ${state.day}\n`
       + `Heure : ${state.time}\n\n`
       + `C'est un date 💘`;
   }
-  $("#share").addEventListener("click", () => {
-    const url = "https://wa.me/?text=" + encodeURIComponent(recapText());
-    window.open(url, "_blank");
+  $("#share").addEventListener("click",()=>{ beep("click"); window.open("https://wa.me/?text="+encodeURIComponent(recapText()),"_blank"); });
+  $("#copy").addEventListener("click",async()=>{
+    beep("click");
+    try{ await navigator.clipboard.writeText(recapText()); toast("Récap copié ✅"); }
+    catch{ toast("Copie impossible ici 🙈"); }
   });
-  $("#copy").addEventListener("click", async () => {
-    try { await navigator.clipboard.writeText(recapText()); toast("Récap copié ✅"); }
-    catch { toast("Copie impossible ici 🙈"); }
+
+  /* — génère le ticket en image (canvas) — */
+  function makeTicketCanvas(){
+    const W=720,H=1040,c=document.createElement("canvas"); c.width=W; c.height=H;
+    const x=c.getContext("2d");
+    // fond
+    const bg=x.createLinearGradient(0,0,W,H); bg.addColorStop(0,"#ffe1ea"); bg.addColorStop(1,"#ffd8c2");
+    x.fillStyle=bg; x.fillRect(0,0,W,H);
+    // carte
+    const m=50, cw=W-m*2, ch=H-m*2, r=40;
+    roundRect(x,m,m,cw,ch,r); x.fillStyle="#fffafc"; x.fill();
+    // bandeau
+    x.save(); roundRect(x,m,m,cw,150,r); x.clip();
+    const hb=x.createLinearGradient(m,m,m+cw,m+150); hb.addColorStop(0,"#ff1d68"); hb.addColorStop(1,"#ff7a45");
+    x.fillStyle=hb; x.fillRect(m,m,cw,150); x.restore();
+    x.fillStyle="#fff"; x.textBaseline="middle";
+    x.font="700 22px Instrument Sans, sans-serif"; x.fillText("DATE PASS", m+40, m+58);
+    x.font="900 40px Fraunces, Georgia, serif"; x.fillText("Toi + Moi", m+40, m+100);
+    x.font="46px serif"; x.textAlign="right"; x.fillText("💌", m+cw-40, m+80); x.textAlign="left";
+    // pointillés
+    x.strokeStyle="#ffd4e2"; x.lineWidth=3; x.setLineDash([10,10]);
+    x.beginPath(); x.moveTo(m+30,m+180); x.lineTo(m+cw-30,m+180); x.stroke(); x.setLineDash([]);
+    // lignes de contenu
+    const rows=[["INVITÉ·E",state.to],["AMBIANCE",state.food],["COMPATIBILITÉ",state.score+"% 💘"],["JOUR",state.day],["HEURE",state.time]];
+    let yy=m+250;
+    rows.forEach(rw=>{
+      x.fillStyle="#7a3661"; x.font="700 18px Instrument Sans, sans-serif"; x.textAlign="left";
+      x.fillText(rw[0], m+45, yy);
+      x.fillStyle="#37092b"; x.font="600 30px Fraunces, Georgia, serif"; x.textAlign="right";
+      x.fillText(rw[1], m+cw-45, yy);
+      x.strokeStyle="#ffe0ea"; x.lineWidth=2; x.beginPath(); x.moveTo(m+45,yy+34); x.lineTo(m+cw-45,yy+34); x.stroke();
+      yy+=110;
+    });
+    // pied
+    x.fillStyle="#ff1d68"; x.textAlign="center"; x.font="900 34px Fraunces, Georgia, serif";
+    x.fillText("C'est un date 💘", W/2, H-120);
+    x.fillStyle="#7a3661"; x.font="500 18px Instrument Sans, sans-serif";
+    x.fillText("Fait avec 💗", W/2, H-80);
+    return c;
+  }
+  function roundRect(x,X,Y,w,h,r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+h,r); x.arcTo(X+w,Y+h,X,Y+h,r); x.arcTo(X,Y+h,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath(); }
+
+  $("#download").addEventListener("click",async()=>{
+    beep("click");
+    const c=makeTicketCanvas();
+    c.toBlob(async(blob)=>{
+      const file=new File([blob],"date-pass.png",{type:"image/png"});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        try{ await navigator.share({files:[file],title:"Date Pass 💌"}); return; }catch(e){}
+      }
+      const url=URL.createObjectURL(blob), a=document.createElement("a");
+      a.href=url; a.download="date-pass.png"; a.click(); URL.revokeObjectURL(url);
+      toast("Ticket enregistré 🎟️");
+    },"image/png");
   });
-  $("#restart").addEventListener("click", () => {
-    noTries = 0; yesScale = 1;
-    yesBtn.style.transform = ""; noBtn.style.transform = ""; noBtn.style.opacity = "";
-    noBtn.textContent = CONFIG.noEscalation[0];
-    $$("#grid .tile").forEach(x => x.classList.remove("sel"));
-    $$("#days .chip").forEach(x => x.classList.remove("sel"));
-    timeSel.selectedIndex = 0;
-    state.food = state.day = state.time = "";
-    toStep2.disabled = true; toStep2.style.opacity = .5;
-    confirm.disabled = true; confirm.style.opacity = .5;
+
+  $("#restart").addEventListener("click",()=>{
+    beep("click");
+    noTries=0; yesScale=1; yesBtn.style.transform=""; noBtn.style.transform=""; noBtn.style.opacity="";
+    noBtn.textContent=CONFIG.noEscalation[0];
+    $$("#grid .tile").forEach(x=>x.classList.remove("sel"));
+    $$("#days .chip").forEach(x=>x.classList.remove("sel"));
+    timeSel.selectedIndex=0;
+    state.food=state.day=state.time=""; state.score=0;
+    toStep2.disabled=true; toStep2.style.opacity=.5;
+    confirm.disabled=true; confirm.style.opacity=.5;
+    fill.style.width="0%"; pctEl.textContent="0%"; capEl.textContent="initialisation…";
+    meterRunning=false; toStep3.disabled=true; toStep3.style.opacity=.5;
     go("s1");
   });
 
-  function toast(msg) {
-    const t = $("#toast"); t.textContent = msg; t.classList.add("show");
-    setTimeout(() => t.classList.remove("show"), 1900);
-  }
+  function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1900); }
 
-  /* ═══════════════ confettis / cœurs (canvas maison) ═══════════════ */
-  const cv = $("#fx"), ctx = cv.getContext("2d");
-  function fit() { cv.width = innerWidth; cv.height = innerHeight; }
-  fit(); addEventListener("resize", fit);
-  let parts = [];
-  const glyphs = ["💗","💖","🩷","💘","✨","🌸","💞"];
-  function burst() {
-    const n = 42;
-    for (let i = 0; i < n; i++) {
-      parts.push({
-        x: innerWidth / 2, y: innerHeight * 0.38,
-        vx: (Math.random() * 2 - 1) * 9,
-        vy: -8 - Math.random() * 9,
-        g: 0.28 + Math.random() * 0.12,
-        life: 90 + Math.random() * 40,
-        rot: Math.random() * 6, vr: (Math.random() * 2 - 1) * 0.25,
-        s: 16 + Math.random() * 20,
-        ch: glyphs[(Math.random() * glyphs.length) | 0]
-      });
+  /* ═══════════════ confettis / cœurs (canvas) ═══════════════ */
+  const cv=$("#fx"), ctx=cv.getContext("2d");
+  function fit(){ cv.width=innerWidth; cv.height=innerHeight; }
+  fit(); addEventListener("resize",fit);
+  let parts=[]; const glyphs=["💗","💖","🩷","💘","✨","🌸","💞"];
+  function burst(){
+    for(let i=0;i<44;i++){
+      parts.push({ x:innerWidth/2, y:innerHeight*0.4,
+        vx:(Math.random()*2-1)*9, vy:-8-Math.random()*9, g:.28+Math.random()*.12,
+        life:90+Math.random()*40, rot:Math.random()*6, vr:(Math.random()*2-1)*.25,
+        s:16+Math.random()*20, ch:glyphs[(Math.random()*glyphs.length)|0] });
     }
-    if (!raf) loop();
+    if(!raf) loop();
   }
-  let raf = null;
-  function loop() {
-    ctx.clearRect(0, 0, cv.width, cv.height);
-    parts.forEach(p => {
-      p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life--;
-      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
-      ctx.globalAlpha = Math.max(0, Math.min(1, p.life / 40));
-      ctx.font = p.s + "px serif"; ctx.textAlign = "center";
-      ctx.fillText(p.ch, 0, 0); ctx.restore();
+  let raf=null;
+  function loop(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    parts.forEach(p=>{ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.life--;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.globalAlpha=Math.max(0,Math.min(1,p.life/40));
+      ctx.font=p.s+"px serif"; ctx.textAlign="center"; ctx.fillText(p.ch,0,0); ctx.restore();
     });
-    parts = parts.filter(p => p.life > 0 && p.y < cv.height + 60);
-    if (parts.length) { raf = requestAnimationFrame(loop); }
-    else { ctx.clearRect(0, 0, cv.width, cv.height); raf = null; }
+    parts=parts.filter(p=>p.life>0 && p.y<cv.height+60);
+    if(parts.length){ raf=requestAnimationFrame(loop); } else { ctx.clearRect(0,0,cv.width,cv.height); raf=null; }
   }
 
-  /* init */
-  noBtn.textContent = CONFIG.noEscalation[0];
-  go("s1");
+  noBtn.textContent=CONFIG.noEscalation[0];
+  go("s0");
 </script>
